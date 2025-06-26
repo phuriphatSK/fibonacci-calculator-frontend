@@ -103,7 +103,7 @@ export const FibonacciForm: React.FC<FibonacciFormProps> = ({
       </CardContent>
 
       {latestResult && (
-        <CardFooter className="flex flex-col items-start gap-2 bg-gray-50 p-4 rounded-b-xl border-t">
+        <CardFooter className="flex flex-col items-start gap-2 p-4 rounded-b-xl border-t">
           <p className="text-sm font-semibold text-gray-700">ผลลัพธ์ล่าสุด:</p>
           <div className="text-sm text-gray-600 font-mono break-all">
             <strong>Index:</strong> {latestResult.index}
