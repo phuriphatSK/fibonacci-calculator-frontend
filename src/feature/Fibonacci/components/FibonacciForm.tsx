@@ -6,15 +6,19 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 import { validateFibonacciIndex } from "@/utils/fibonacci";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 interface FibonacciFormProps {
-  onCalculate: (index: number) => Promise<void>;
+  onCalculate: (index: number) => Promise<{
+    index: number;
+    result: string;
+    createdAt?: string;
+  }>;
   loading: boolean;
 }
 
@@ -24,6 +28,11 @@ export const FibonacciForm: React.FC<FibonacciFormProps> = ({
 }) => {
   const [fibIndex, setFibIndex] = useState("");
   const [error, setError] = useState("");
+  const [latestResult, setLatestResult] = useState<{
+    index: number;
+    result: string;
+    createdAt?: string;
+  } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +44,8 @@ export const FibonacciForm: React.FC<FibonacciFormProps> = ({
     }
 
     try {
-      await onCalculate(Number.parseInt(fibIndex));
+      const result = await onCalculate(Number.parseInt(fibIndex));
+      setLatestResult(result);
       setFibIndex("");
     } catch {
       setError("เกิดข้อผิดพลาดในการคำนวณ");
@@ -50,6 +60,7 @@ export const FibonacciForm: React.FC<FibonacciFormProps> = ({
           ป้อนตัวเลข index เพื่อคำนวณค่า Fibonacci
         </CardDescription>
       </CardHeader>
+
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -73,6 +84,7 @@ export const FibonacciForm: React.FC<FibonacciFormProps> = ({
             </p>
             {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
           </div>
+
           <Button
             type="submit"
             className="w-full"
@@ -89,6 +101,24 @@ export const FibonacciForm: React.FC<FibonacciFormProps> = ({
           </Button>
         </form>
       </CardContent>
+
+      {latestResult && (
+        <CardFooter className="flex flex-col items-start gap-2 bg-gray-50 p-4 rounded-b-xl border-t">
+          <p className="text-sm font-semibold text-gray-700">ผลลัพธ์ล่าสุด:</p>
+          <div className="text-sm text-gray-600 font-mono break-all">
+            <strong>Index:</strong> {latestResult.index}
+          </div>
+          <div className="text-sm text-gray-600 font-mono break-all">
+            <strong>Result:</strong> {latestResult.result}
+          </div>
+          {latestResult.createdAt && (
+            <div className="text-xs text-gray-400">
+              <strong>เวลา:</strong>{" "}
+              {new Date(latestResult.createdAt).toLocaleString()}
+            </div>
+          )}
+        </CardFooter>
+      )}
     </Card>
   );
 };

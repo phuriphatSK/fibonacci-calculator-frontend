@@ -1,25 +1,32 @@
 import { useState, useCallback } from "react";
-import type { FibonacciResult } from "@/types";
-import { calculate, history } from "@/feature/Fibonacci/api";
+import type { FibonacciResult, Pagination } from "@/types";
+import {
+  calculate,
+  pagination as fetchPagination,
+} from "@/feature/Fibonacci/api";
 import axios from "axios";
 
 export const useFibonacci = () => {
   const [results, setResults] = useState<FibonacciResult[]>([]);
+  const [pagination, setPagination] = useState<Pagination>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+    hasNext: false,
+    hasPrevious: false,
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const loadHistory = useCallback(async () => {
+  const loadHistory = useCallback(async (page = 1, limit = 5) => {
     setLoading(true);
-    setError(null);
     try {
-      const latestHistory = await history();
-      setResults(latestHistory.calculations);
-    } catch (err: unknown) {
-      let errorMessage = "ไม่สามารถโหลดประวัติได้";
-      if (axios.isAxiosError(err) && err.response?.data?.message) {
-        errorMessage = err.response.data.message;
-      }
-      setError(errorMessage);
+      const res = await fetchPagination(page, limit);
+      setResults(res.data);
+      setPagination(res.pagination);
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -32,7 +39,7 @@ export const useFibonacci = () => {
 
       try {
         const resultFromAPI = await calculate(index);
-        await loadHistory(); // โหลดประวัติใหม่หลังคำนวณเสร็จ
+        await loadHistory();
         return resultFromAPI;
       } catch (err: unknown) {
         let errorMessage = "เกิดข้อผิดพลาดในการคำนวณ";
@@ -55,6 +62,7 @@ export const useFibonacci = () => {
   }, []);
 
   return {
+    pagination,
     results,
     loading,
     error,

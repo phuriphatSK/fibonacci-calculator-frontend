@@ -27,3 +27,17 @@ export interface AuthContextType {
   logout: () => void;
   loading: boolean;
 }
+
+export interface PaginationHistory {
+  data: FibonacciResult[];
+  pagination: Pagination;
+}
+
+export interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
