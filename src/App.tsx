@@ -1,17 +1,17 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { FibonacciPage } from "./feature/Fibonacci";
 import { LoginPage } from "./feature/Login";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({
-//   children,
-// }) => {
-//   const { user } = useAuth();
-//   return user ? children : <Navigate to="/login" replace />;
-// };
+const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({
+  children,
+}) => {
+  const { user } = useAuth();
+  return user ? children : <Navigate to="/" replace />;
+};
 
 const AppContent: React.FC = () => {
   const { loading } = useAuth();
@@ -27,7 +27,14 @@ const AppContent: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />
-      <Route path="/fibonacci" element={<FibonacciPage />} />
+      <Route
+        path="/fibonacci"
+        element={
+          <ProtectedRoute>
+            <FibonacciPage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 };
