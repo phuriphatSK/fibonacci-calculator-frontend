@@ -19,7 +19,6 @@ export const LoginForm: React.FC = () => {
       import.meta.env.VITE_API_BASE_URL
     }/auth/callback?from=${encodeURIComponent(from)}`;
 
-    // สมมติ backend รองรับ query ?redirect_uri=
     window.location.href = `${
       import.meta.env.VITE_API_BASE_URL
     }/auth/google?redirect_uri=${encodeURIComponent(redirectUri)}`;
