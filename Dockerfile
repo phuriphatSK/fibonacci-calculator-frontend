@@ -9,6 +9,7 @@ RUN npm ci
 
 # Copy source code and build
 COPY . .
+RUN npm install
 RUN npm run build
 
 # Production stage
